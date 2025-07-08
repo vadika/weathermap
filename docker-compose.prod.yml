@@ -6,8 +6,8 @@ services:
     image: weathermap:production
     container_name: weathermap-prod
     restart: always
-    ports:
-      - "8112:8112"
+    expose:
+      - "8112"
     environment:
       - FLASK_ENV=production
       - PYTHONUNBUFFERED=1

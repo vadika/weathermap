@@ -27,15 +27,15 @@ echo "✅ Environment configuration verified"
 
 # Build the image
 echo "📦 Building Docker image..."
-docker-compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml build
 
 # Stop existing containers
 echo "🛑 Stopping existing containers..."
-docker-compose -f docker-compose.prod.yml down
+docker compose -f docker-compose.prod.yml down
 
 # Start new containers
 echo "🚀 Starting new containers..."
-docker-compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml up -d
 
 # Wait for health check
 echo "⏳ Waiting for services to be healthy..."
@@ -43,11 +43,11 @@ sleep 10
 
 # Check container status
 echo "📊 Container status:"
-docker-compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml ps
 
 # Show logs
 echo "📝 Recent logs:"
-docker-compose -f docker-compose.prod.yml logs --tail=20
+docker compose -f docker-compose.prod.yml logs --tail=20
 
 echo "✅ Deployment complete!"
 echo "🌐 Weather map service is available at:"
@@ -57,5 +57,5 @@ echo "   - Nginx (with caching): http://localhost:8112"
 if [ "$1" = "--debug" ]; then
     echo ""
     echo "🔍 Debug: Checking environment variables in container..."
-    docker-compose -f docker-compose.prod.yml exec weathermap sh -c 'echo "API Key present: $(if [ -n "$OPENWEATHERMAP_API_KEY" ]; then echo "Yes"; else echo "No"; fi)"'
+    docker compose -f docker-compose.prod.yml exec weathermap sh -c 'echo "API Key present: $(if [ -n "$OPENWEATHERMAP_API_KEY" ]; then echo "Yes"; else echo "No"; fi)"'
 fi

@@ -64,7 +64,8 @@ http://localhost:8112/tiles/10/512/512.svg
 ## API Endpoints
 
 - `/` - Home page with basic information
-- `/tiles/{z}/{x}/{y}.svg` - Get weather tile for specific coordinates
+- `/tiles/{z}/{x}/{y}.svg` - Get weather tile in SVG format (vector)
+- `/tiles/{z}/{x}/{y}.png` - Get weather tile in PNG format (raster)
 
 ## Production Deployment
 
@@ -84,7 +85,7 @@ http://localhost:8112/tiles/10/512/512.svg
 
 Or manually:
 ```bash
-docker-compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml up -d
 ```
 
 ### Production Features

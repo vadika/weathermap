@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Weather Map Test</title>
+    <title>Weather Map Test - PNG Tiles</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -26,10 +26,28 @@
             margin: 0 0 5px;
             color: #777;
         }
+        .format-switch {
+            position: absolute;
+            top: 10px;
+            right: 100px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
     <div id="map"></div>
+    <div class="format-switch">
+        <label>
+            <input type="radio" name="format" value="svg" onchange="switchFormat('svg')"> SVG
+        </label>
+        <label>
+            <input type="radio" name="format" value="png" checked onchange="switchFormat('png')"> PNG
+        </label>
+    </div>
     
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
@@ -37,36 +55,53 @@
         var map = L.map('map').setView([40.7128, -74.0060], 10); // New York City
         
         // Add OpenStreetMap base layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        var baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors',
             maxZoom: 18
         }).addTo(map);
         
-        // Add weather tile layer
-        var weatherLayer = L.tileLayer('http://135.181.196.67:8112/tiles/{z}/{x}/{y}.svg', {
+        // Weather tile layers
+        var weatherLayerSVG = L.tileLayer('http://localhost:8112/tiles/{z}/{x}/{y}.svg', {
+            attribution: 'Weather data © OpenWeatherMap',
+            opacity: 1.0,
+            maxZoom: 18,
+            minZoom: 5
+        });
+        
+        var weatherLayerPNG = L.tileLayer('http://localhost:8112/tiles/{z}/{x}/{y}.png', {
             attribution: 'Weather data © OpenWeatherMap',
             opacity: 1.0,
             maxZoom: 18,
             minZoom: 5
         }).addTo(map);
         
+        var currentWeatherLayer = weatherLayerPNG;
+        
+        // Function to switch formats
+        function switchFormat(format) {
+            if (currentWeatherLayer) {
+                map.removeLayer(currentWeatherLayer);
+            }
+            
+            if (format === 'svg') {
+                currentWeatherLayer = weatherLayerSVG;
+            } else {
+                currentWeatherLayer = weatherLayerPNG;
+            }
+            
+            currentWeatherLayer.addTo(map);
+        }
+        
         // Add layer control
         var baseLayers = {
-            "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors',
-                maxZoom: 18
-            }),
+            "OpenStreetMap": baseLayer,
             "Satellite": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
                 attribution: 'Tiles &copy; Esri',
                 maxZoom: 18
             })
         };
         
-        var overlays = {
-            "Weather": weatherLayer
-        };
-        
-        L.control.layers(baseLayers, overlays).addTo(map);
+        L.control.layers(baseLayers).addTo(map);
         
         // Add info control
         var info = L.control();
@@ -78,10 +113,9 @@
         };
         
         info.update = function () {
-            this._div.innerHTML = '<h4>Weather Map Test</h4>' +
-                'Weather tiles show temperature, conditions, and wind direction<br>' +
-                'Zoom in/out to see weather data at different locations<br>' +
-                'Weather data is cached for 10 minutes';
+            this._div.innerHTML = '<h4>Weather Map Test - PNG/SVG</h4>' +
+                'Switch between PNG and SVG formats using the radio buttons<br>' +
+                'PNG tiles are raster images, SVG tiles are vector graphics';
         };
         
         info.addTo(map);
