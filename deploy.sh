@@ -51,8 +51,7 @@ docker-compose -f docker-compose.prod.yml logs --tail=20
 
 echo "✅ Deployment complete!"
 echo "🌐 Weather map service is available at:"
-echo "   - HTTP: http://localhost"
-echo "   - Direct: http://localhost:8112"
+echo "   - Nginx (with caching): http://localhost:8112"
 
 # Debug mode
 if [ "$1" = "--debug" ]; then

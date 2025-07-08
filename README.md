@@ -89,13 +89,15 @@ docker-compose -f docker-compose.prod.yml up -d
 
 ### Production Features
 
-- **Nginx reverse proxy** with caching and rate limiting
+- **Nginx reverse proxy** on port 8112 with caching and rate limiting
 - **Health checks** for automatic container recovery
 - **Resource limits** to prevent memory/CPU issues
 - **Persistent logging** with rotation
 - **CORS headers** for cross-origin requests
 - **10-minute cache** for weather tiles
 - **Rate limiting** at 10 requests/second per IP
+
+The production setup runs Nginx on port 8112, which proxies to the Flask app internally. This provides caching, rate limiting, and better performance while maintaining the same port as development.
 
 ### SSL/HTTPS Setup
 
