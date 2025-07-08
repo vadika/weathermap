@@ -9,7 +9,6 @@ services:
     ports:
       - "8112:8112"
     environment:
-      - OPENWEATHERMAP_API_KEY=${OPENWEATHERMAP_API_KEY}
       - FLASK_ENV=production
       - PYTHONUNBUFFERED=1
     env_file:

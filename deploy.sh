@@ -13,6 +13,15 @@ if [ ! -f .env.production ]; then
     exit 1
 fi
 
+# Check if API key is configured
+if ! grep -q "OPENWEATHERMAP_API_KEY=." .env.production; then
+    echo "❌ Error: OPENWEATHERMAP_API_KEY not configured in .env.production!"
+    echo "Please edit .env.production and add your API key."
+    exit 1
+fi
+
+echo "✅ Environment configuration verified"
+
 # Pull latest changes (if using git)
 # git pull origin main
 
@@ -44,3 +53,10 @@ echo "✅ Deployment complete!"
 echo "🌐 Weather map service is available at:"
 echo "   - HTTP: http://localhost"
 echo "   - Direct: http://localhost:8112"
+
+# Debug mode
+if [ "$1" = "--debug" ]; then
+    echo ""
+    echo "🔍 Debug: Checking environment variables in container..."
+    docker-compose -f docker-compose.prod.yml exec weathermap sh -c 'echo "API Key present: $(if [ -n "$OPENWEATHERMAP_API_KEY" ]; then echo "Yes"; else echo "No"; fi)"'
+fi
