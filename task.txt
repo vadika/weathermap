@@ -1,0 +1,5 @@
+A Python program, that provides z-x-y map tiles over http.
+tiles should be transparent svg, in left top corner -- should be current weather in the position: temperature(C), 
+ weather icon (cloudy, sunny, rain, snow, etc) and an arrow pointing the wind direction.
+weather should be fetched from openweathermap. coordinates should be rounded to the 2nd digit after the dot and results should be cached to reduce number of api calls
+Program should be packaged as docker, propagating port 8112 to access the http server 

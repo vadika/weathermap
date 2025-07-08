@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Map Test</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+        .info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: white;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+        .info h4 {
+            margin: 0 0 5px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([40.7128, -74.0060], 10); // New York City
+        
+        // Add OpenStreetMap base layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 18
+        }).addTo(map);
+        
+        // Add weather tile layer
+        var weatherLayer = L.tileLayer('http://localhost:8112/tiles/{z}/{x}/{y}.svg', {
+            attribution: 'Weather data © OpenWeatherMap',
+            opacity: 1.0,
+            maxZoom: 18,
+            minZoom: 5
+        }).addTo(map);
+        
+        // Add layer control
+        var baseLayers = {
+            "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 18
+            }),
+            "Satellite": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri',
+                maxZoom: 18
+            })
+        };
+        
+        var overlays = {
+            "Weather": weatherLayer
+        };
+        
+        L.control.layers(baseLayers, overlays).addTo(map);
+        
+        // Add info control
+        var info = L.control();
+        
+        info.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info');
+            this.update();
+            return this._div;
+        };
+        
+        info.update = function () {
+            this._div.innerHTML = '<h4>Weather Map Test</h4>' +
+                'Weather tiles show temperature, conditions, and wind direction<br>' +
+                'Zoom in/out to see weather data at different locations<br>' +
+                'Weather data is cached for 10 minutes';
+        };
+        
+        info.addTo(map);
+        
+        // Add click handler to show coordinates
+        map.on('click', function(e) {
+            var lat = e.latlng.lat.toFixed(4);
+            var lng = e.latlng.lng.toFixed(4);
+            L.popup()
+                .setLatLng(e.latlng)
+                .setContent("Coordinates: " + lat + ", " + lng)
+                .openOn(map);
+        });
+        
+        // Add some predefined locations
+        var cities = {
+            "New York": [40.7128, -74.0060],
+            "London": [51.5074, -0.1278],
+            "Tokyo": [35.6762, 139.6503],
+            "Sydney": [-33.8688, 151.2093],
+            "Paris": [48.8566, 2.3522],
+            "Moscow": [55.7558, 37.6173],
+            "Dubai": [25.2048, 55.2708],
+            "Singapore": [1.3521, 103.8198]
+        };
+        
+        var select = L.DomUtil.create('select');
+        select.style.position = 'absolute';
+        select.style.top = '10px';
+        select.style.right = '10px';
+        select.style.zIndex = '1000';
+        select.style.padding = '5px';
+        
+        var option = L.DomUtil.create('option', '', select);
+        option.text = 'Jump to city...';
+        option.value = '';
+        
+        for (var city in cities) {
+            option = L.DomUtil.create('option', '', select);
+            option.text = city;
+            option.value = city;
+        }
+        
+        select.onchange = function() {
+            if (this.value && cities[this.value]) {
+                map.setView(cities[this.value], 10);
+            }
+        };
+        
+        document.body.appendChild(select);
+    </script>
+</body>
+</html>
