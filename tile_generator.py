@@ -87,9 +87,9 @@ class TileGenerator:
         weather = weather_data['weather']
         wind_direction = weather_data['wind_direction']
         
-        # Try to use a basic font
+        # Try to use a thinner font
         try:
-            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 13)
+            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 13)
             icon_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16)
         except:
             font = ImageFont.load_default()
@@ -102,37 +102,37 @@ class TileGenerator:
         icon = self.get_weather_icon(weather)
         draw.text((20, 25), icon, fill=(0, 0, 0, 255), font=icon_font, anchor="mt")
         
-        # Wind arrow
-        self._draw_wind_arrow(draw, 55, 8, wind_direction)
+        # Wind triangle
+        self._draw_wind_triangle(draw, 55, 8, wind_direction)
         
         # Convert to bytes
         buffer = io.BytesIO()
         img.save(buffer, format='PNG')
         return buffer.getvalue()
     
-    def _draw_wind_arrow(self, draw, x, y, direction):
+    def _draw_wind_triangle(self, draw, x, y, direction):
         # Convert direction to radians
         angle = math.radians(direction)
         
-        # Arrow points
-        length = 12
-        head_length = 4
+        # Triangle dimensions
+        height = 12
+        base_width = 6
         
-        # Calculate end point
-        end_x = x + length * math.sin(angle)
-        end_y = y - length * math.cos(angle)
+        # Calculate triangle points
+        # Tip of triangle (pointing in wind direction)
+        tip_x = x + height * math.sin(angle)
+        tip_y = y - height * math.cos(angle)
         
-        # Calculate arrow head points
-        head_angle1 = angle - math.pi / 6
-        head_angle2 = angle + math.pi / 6
+        # Base points (perpendicular to direction)
+        base_angle1 = angle - math.pi / 2
+        base_angle2 = angle + math.pi / 2
         
-        head_x1 = end_x - head_length * math.sin(head_angle1)
-        head_y1 = end_y + head_length * math.cos(head_angle1)
+        base_x1 = x + (base_width / 2) * math.sin(base_angle1)
+        base_y1 = y - (base_width / 2) * math.cos(base_angle1)
         
-        head_x2 = end_x - head_length * math.sin(head_angle2)
-        head_y2 = end_y + head_length * math.cos(head_angle2)
+        base_x2 = x + (base_width / 2) * math.sin(base_angle2)
+        base_y2 = y - (base_width / 2) * math.cos(base_angle2)
         
-        # Draw arrow
-        draw.line([(x, y), (end_x, end_y)], fill=(0, 0, 0, 255), width=2)
-        draw.polygon([(end_x, end_y), (head_x1, head_y1), (head_x2, head_y2)], 
-                     fill=(0, 0, 0, 255))
+        # Draw thin triangle outline
+        draw.polygon([(tip_x, tip_y), (base_x1, base_y1), (base_x2, base_y2)], 
+                     outline=(0, 0, 0, 255), width=1)
